@@ -1,99 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class CarTrunks {
+public class CarTrunks implements Category {
 
     private List<String> carTrunks = new ArrayList<>();
 
     public CarTrunks(){
-        carTrunks.add("https://es-auto.ru/car-trunks/4900/");
-        carTrunks.add("https://es-auto.ru/car-trunks/750_754/");
-        carTrunks.add("https://es-auto.ru/car-trunks/751_753/");
-        carTrunks.add("https://es-auto.ru/car-trunks/amos/");
-        carTrunks.add("https://es-auto.ru/car-trunks/amos_roofrack/");
-        carTrunks.add("https://es-auto.ru/car-trunks/atlant/");
-        carTrunks.add("https://es-auto.ru/car-trunks/atlant_roofrack/");
-        carTrunks.add("https://es-auto.ru/car-trunks/atlant2890/");
-        carTrunks.add("https://es-auto.ru/car-trunks/atlant2895/");
-        carTrunks.add("https://es-auto.ru/car-trunks/atlant2896/");
-        carTrunks.add("https://es-auto.ru/car-trunks/atlant2909/");
-        carTrunks.add("https://es-auto.ru/car-trunks/audi/");
-        carTrunks.add("https://es-auto.ru/car-trunks/bagazhnik_v_sbore/");
-        carTrunks.add("https://es-auto.ru/car-trunks/bagazhniki-v-sbore/");
-        carTrunks.add("https://es-auto.ru/car-trunks/bmw/");
-        carTrunks.add("https://es-auto.ru/car-trunks/chery/");
-        carTrunks.add("https://es-auto.ru/car-trunks/chery2973/");
-        carTrunks.add("https://es-auto.ru/car-trunks/chevrolet/");
-        carTrunks.add("https://es-auto.ru/car-trunks/chevrolet2963/");
-        carTrunks.add("https://es-auto.ru/car-trunks/citroen/");
-        carTrunks.add("https://es-auto.ru/car-trunks/citroen2974/");
-        carTrunks.add("https://es-auto.ru/car-trunks/conventional-roof/");
-        carTrunks.add("https://es-auto.ru/car-trunks/daewoo/");
-        carTrunks.add("https://es-auto.ru/car-trunks/dlya_uporov_tipa_b_i_s/");
-        carTrunks.add("https://es-auto.ru/car-trunks/dlya_uporov_tipa_e/");
-        carTrunks.add("https://es-auto.ru/car-trunks/dodge/");
-        carTrunks.add("https://es-auto.ru/car-trunks/dodge2962/");
-        carTrunks.add("https://es-auto.ru/car-trunks/dop_oborudovanie/");
-        carTrunks.add("https://es-auto.ru/car-trunks/duga/");
-        carTrunks.add("https://es-auto.ru/car-trunks/fiat/");
-        carTrunks.add("https://es-auto.ru/car-trunks/ficopro/");
-        carTrunks.add("https://es-auto.ru/car-trunks/ficopro_roofrack/");
-        carTrunks.add("https://es-auto.ru/car-trunks/ficopro2987/");
-        carTrunks.add("https://es-auto.ru/car-trunks/ford/");
-        carTrunks.add("https://es-auto.ru/car-trunks/ford2945/");
-        carTrunks.add("https://es-auto.ru/car-trunks/ford2950/");
-        carTrunks.add("https://es-auto.ru/car-trunks/geely/");
-        carTrunks.add("https://es-auto.ru/car-trunks/great_wall/");
-        carTrunks.add("https://es-auto.ru/car-trunks/honda/");
-        carTrunks.add("https://es-auto.ru/car-trunks/honda2943/");
-        carTrunks.add("https://es-auto.ru/car-trunks/hyundai/");
-        carTrunks.add("https://es-auto.ru/car-trunks/hyundai2951/");
-        carTrunks.add("https://es-auto.ru/car-trunks/ikco/");
-        carTrunks.add("https://es-auto.ru/car-trunks/infiniti2960/");
-        carTrunks.add("https://es-auto.ru/car-trunks/integrated-roof-rails/");
-        carTrunks.add("https://es-auto.ru/car-trunks/jeep/");
-        carTrunks.add("https://es-auto.ru/car-trunks/kia/");
-        carTrunks.add("https://es-auto.ru/car-trunks/kia2948/");
-        carTrunks.add("https://es-auto.ru/car-trunks/kit/");
-        carTrunks.add("https://es-auto.ru/car-trunks/land_rover/");
-        carTrunks.add("https://es-auto.ru/car-trunks/lexus/");
-        carTrunks.add("https://es-auto.ru/car-trunks/lifan/");
-        carTrunks.add("https://es-auto.ru/car-trunks/mazda/");
-        carTrunks.add("https://es-auto.ru/car-trunks/mazda2952/");
-        carTrunks.add("https://es-auto.ru/car-trunks/menabo/");
-        carTrunks.add("https://es-auto.ru/car-trunks/menabo_racks-assembly/");
-        carTrunks.add("https://es-auto.ru/car-trunks/menabo_roofrack/");
-        carTrunks.add("https://es-auto.ru/car-trunks/menabo2982/");
-        carTrunks.add("https://es-auto.ru/car-trunks/menabo2983/");
-        carTrunks.add("https://es-auto.ru/car-trunks/menabo2984/");
-        carTrunks.add("https://es-auto.ru/car-trunks/mercedes_benz/");
-        carTrunks.add("https://es-auto.ru/car-trunks/mitsubishi/");
-        carTrunks.add("https://es-auto.ru/car-trunks/mitsubishi2954/");
-        carTrunks.add("https://es-auto.ru/car-trunks/mont_blanc/");
-        carTrunks.add("https://es-auto.ru/car-trunks/mont_blanc2965/");
-        carTrunks.add("https://es-auto.ru/car-trunks/mont_blanc2967/");
-        carTrunks.add("https://es-auto.ru/car-trunks/mounting-kits/");
-        carTrunks.add("https://es-auto.ru/car-trunks/mounting-kits-ficopro/");
-        carTrunks.add("https://es-auto.ru/car-trunks/mounting-kits-menabo/");
-        carTrunks.add("https://es-auto.ru/car-trunks/na_reylingi/");
-        carTrunks.add("https://es-auto.ru/car-trunks/na_vodostoki/");
-        carTrunks.add("https://es-auto.ru/car-trunks/nissan/");
-        carTrunks.add("https://es-auto.ru/car-trunks/nissan2893/");
-        carTrunks.add("https://es-auto.ru/car-trunks/nissan2949/");
-        carTrunks.add("https://es-auto.ru/car-trunks/opel/");
-        carTrunks.add("https://es-auto.ru/car-trunks/opel2957/");
-        carTrunks.add("https://es-auto.ru/car-trunks/originalnye/");
-        carTrunks.add("https://es-auto.ru/car-trunks/peugeot/");
-        carTrunks.add("https://es-auto.ru/car-trunks/peugeot2972/");
-        carTrunks.add("https://es-auto.ru/car-trunks/porsche/");
-        carTrunks.add("https://es-auto.ru/car-trunks/regular-places/");
-        carTrunks.add("https://es-auto.ru/car-trunks/renault/");
-        carTrunks.add("https://es-auto.ru/car-trunks/renault2975/");
-        carTrunks.add("https://es-auto.ru/car-trunks/roof-racks-on-roof-rails-ficopro/");
-        carTrunks.add("https://es-auto.ru/car-trunks/saab2977/");
-        carTrunks.add("https://es-auto.ru/car-trunks/seat/");
-        carTrunks.add("https://es-auto.ru/car-trunks/skoda/");
-        carTrunks.add("https://es-auto.ru/car-trunks/skoda2958/");
         carTrunks.add("https://es-auto.ru/car-trunks/sku/adapter_udlinitel_thule_rapid_774/");
         carTrunks.add("https://es-auto.ru/car-trunks/sku/alyuminievaya_aerodinamicheskaya_duga_menabo_l_112_sm/");
         carTrunks.add("https://es-auto.ru/car-trunks/sku/alyuminievaya_aerodinamicheskaya_duga_menabo_l_130_sm/");
@@ -2330,11 +2242,8 @@ public class CarTrunks {
         carTrunks.add("https://es-auto.ru/car-trunks/sku/zamki_thule_526_dlya_bagazhnikov_velokrepleniy_thule_2_sht/");
     }
 
-    public List<String> getCarTrunks() {
+    @Override
+    public List<String> getUrlList() {
         return carTrunks;
-    }
-
-    public void setCarTrunks(List<String> carTrunks) {
-        this.carTrunks = carTrunks;
     }
 }

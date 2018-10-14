@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class CarBoxes {
+public class CarBoxes implements Category {
 
     private List<String> carBoxes = new ArrayList<>();
 
@@ -113,11 +113,8 @@ public class CarBoxes {
         carBoxes.add("https://es-auto.ru/car-boxes/sku/whispbar-wb754/white/");
     }
 
-    public List<String> getCarBoxes() {
+    @Override
+    public List<String> getUrlList() {
         return carBoxes;
-    }
-
-    public void setCarBoxes(List<String> carBoxes) {
-        this.carBoxes = carBoxes;
     }
 }

@@ -1,5 +1,6 @@
 import com.ibm.icu.text.Transliterator;
 import com.opencsv.CSVWriter;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,6 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -25,29 +27,54 @@ public class Parser {
 
     private boolean anotherColor = false;
     private String color = "";
+    private List<String> usedBaseUrls = new ArrayList<>();
 
-    public void urlManager(List<String> urlList, String category) throws IOException {
+    public void urlManager(Map<String, Category> categories) throws InterruptedException, IOException {
         List<Product> productList = new ArrayList<>();
-        for (String url : urlList) {
-            Document doc = Jsoup.connect(url).get();
-            String baseUrl = "https://es-auto.ru";
-            Elements select = doc.getElementsByClass("sel-color").select("a[href]");
-            if (select.size() > 0) {
-                for (Element element : select) {
-                    String href = element.attr("href");
-                    color = "-" + href.substring(href.substring(0, href.length()-1).lastIndexOf("/")+1, href.length()-1);
-                    doc = Jsoup.connect(baseUrl + href).get();
-                    System.out.println("Fetching %s..." + doc.baseUri());
-                    productList.add(parse(doc));
-                    color = "";
-                    anotherColor = true;
+        for (Map.Entry<String, Category> category : categories.entrySet()) {
+            for (String url : category.getValue().getUrlList()) {
+                Document doc = null;
+                try {
+                    doc = Jsoup.connect(url).get();
+                } catch (HttpStatusException e) {
+                    System.err.println("Fetching %s..." + url + " code: " + e.getStatusCode());
+                    if (e.getStatusCode() != 200) continue;
                 }
-                anotherColor = false;
-            } else {
-                System.out.println("Fetching %s..." + doc.baseUri());
-                productList.add(parse(doc));
+                String baseUrl = "https://es-auto.ru";
+                Elements select = doc.getElementsByClass("sel-color").select("a[href]");
+                if (select.size() > 0) {
+                    for (Element element : select) {
+                        String href = element.attr("href");
+                        color = "-" + href.substring(href.substring(0, href.length()-1).lastIndexOf("/")+1, href.length()-1);
+                        try {
+                            doc = Jsoup.connect(baseUrl + href).get();
+                        } catch (HttpStatusException e) {
+                            System.err.println("Fetching %s..." + baseUrl + href + " code: " + e.getStatusCode());
+                            if (e.getStatusCode() != 200) continue;
+                        }
+                        if (usedBaseUrls.contains(doc.baseUri())) {
+                            continue;
+                        }
+                        System.out.println("Fetching %s..." + doc.baseUri());
+                        productList.add(parse(doc, category.getKey()));
+                        usedBaseUrls.add(doc.baseUri());
+                        Thread.sleep(1000);
+                        color = "";
+                        anotherColor = true;
+                    }
+                    anotherColor = false;
+                } else {
+                    if (usedBaseUrls.contains(doc.baseUri())) {
+                        continue;
+                    }
+                    System.out.println("Fetching %s..." + doc.baseUri());
+                    productList.add(parse(doc, category.getKey()));
+                    usedBaseUrls.add(doc.baseUri());
+                    Thread.sleep(1000);
+                }
             }
         }
+        writeCsv(productList);
 //        List<String> articleCrossSale = new ArrayList<>();
 //        for (Product product : productList) {
 //            for (String shortTitle : product.getCrossSale()) {
@@ -57,20 +84,21 @@ public class Parser {
 //            product.getCrossSale().clear();
 //            product.setCrossSale(articleCrossSale);
 //        }
-        writeCsv(productList);
-        System.out.println("");
     }
 
-    private Product parse(Document doc) throws IOException {
+    private Product parse(Document doc, String category) throws IOException {
         Product product = new Product();
+        product.setCategory(category);
         String title = doc.getElementsByClass("main-header").text();
         title = title.substring(0,1).toUpperCase() + title.substring(1);
         product.setTitle(title);
         String text = doc.getElementsByClass("top-info").text();
-        String man = text.substring(text.indexOf("Производитель")+15, text.indexOf(","));
-        String country = text.substring(text.indexOf(",")+2);
-        product.setManufacturer(man);
-        product.setCountry(country);
+        if (text.length() > (text.indexOf("Производитель"))+14 && text.indexOf(",") > 0) {
+            String man = text.substring(text.indexOf("Производитель")+15, text.indexOf(","));
+            String country = text.substring(text.indexOf(",")+2);
+            product.setManufacturer(man);
+            product.setCountry(country);
+        }
         String text1 = doc.getElementsByClass("tech-box").select("h2").text().substring(15);
         product.setShortTitle(trimNew(text1));
         String text2 = doc.getElementsByClass("price new-price").get(0).text().trim().replaceAll(" ", "");
@@ -105,6 +133,8 @@ public class Parser {
         if (!color.equals("")) product.setSeoUrl(filterSeoUrl(toLatinTrans.transliterate(product.getShortTitle()+color)));
         else product.setSeoUrl(filterSeoUrl(toLatinTrans.transliterate(product.getShortTitle())));
         product.setBaseUrl(doc.baseUri());
+        downloadImg(product);
+        return product;
 //        List<String> crossSaleList = new ArrayList<>();
 //        Elements elementsByClass2 = doc.getElementsByClass("swiper-wrapper").get(2).select(".name");
 //        for (Element element : elementsByClass2) {
@@ -117,8 +147,6 @@ public class Parser {
 //            upSaleList.add(trimNew(element.text()));
 //        }
 //        product.setUpSale(upSaleList);
-        downloadImg(product);
-        return product;
     }
 
     private void downloadImg(Product product) throws IOException {
@@ -126,10 +154,22 @@ public class Parser {
         List<String> photosName = new ArrayList<>();
         int i = 1;
         for (String urlPic : product.getPhotosUrl()) {
+            if (isRussian(urlPic) || urlPic.equals("https:")) {
+                continue;
+            }
             URL url = new URL(urlPic);
+
             image = ImageIO.read(url);
             String imgName = product.getCharacteristics().get("Артикул:") + "_" + i;
-            ImageIO.write(image, "jpg",new File("C:\\esAutoImg\\"+ imgName + ".jpg"));
+            File catFolder = new File("C:\\esAutoImg\\" + product.getCategory());
+            if (!catFolder.exists()) {
+                catFolder.mkdir();
+            }
+            File goodsFolder = new File(catFolder + File.separator + product.getCharacteristics().get("Артикул:"));
+            if (!goodsFolder.exists()) {
+                goodsFolder.mkdir();
+            }
+            ImageIO.write(image, "jpg",new File(goodsFolder + File.separator + imgName + ".jpg"));
             photosName.add(imgName + ".jpg");
             ++i;
         }
@@ -137,8 +177,19 @@ public class Parser {
     }
 
     private void downloadPdf(Product product, String urlPdf) throws IOException {
+        if (isRussian(urlPdf)) {
+            return;
+        }
         URL url = new URL("https://es-auto.ru" + urlPdf);
-        String fileName = "C:\\esAutoPDF\\" + product.getCharacteristics().get("Артикул:") + ".pdf";
+        File catFolder = new File("C:\\esAutoPDF\\" + product.getCategory());
+        if (!catFolder.exists()) {
+            catFolder.mkdir();
+        }
+        File goodsFolder = new File(catFolder + File.separator + validFoldName(product.getShortTitle()) + " (" + product.getCharacteristics().get("Артикул:") + ")");
+        if (!goodsFolder.exists()) {
+            goodsFolder.mkdir();
+        }
+        String fileName = goodsFolder.getAbsolutePath() + File.separator + product.getCharacteristics().get("Артикул:") + ".pdf";
         ReadableByteChannel readableByteChannel = null;
         FileChannel fileChannel = null;
         FileOutputStream fileOutputStream = null;
@@ -222,6 +273,7 @@ public class Parser {
             writer.writeNext(prod);
 
             String [] prodFullInfo = (
+                    product.getCategory() + "%" +
                     product.getTitle() + "%" +
                     product.getShortTitle() + "%" +
                     product.getCharacteristics().get("Артикул:") + "%" +
@@ -273,5 +325,29 @@ public class Parser {
             autos.append(auto).append(",").append('\n');
         }
         return autos.substring(0, autos.length() - 1);
+    }
+
+    private boolean isRussian(String str)
+    {
+        char[] chr = str.toCharArray();
+        for (int i = 0; i < chr.length; i++)
+        {
+            if (chr[i] >= 'А' && chr[i] <= 'я')
+                return true;
+        }
+        return false;
+    }
+
+    private String validFoldName(String folder) {
+        folder = folder.replaceAll("\\*", " ");
+        folder = folder.replaceAll("\\|", " ");
+        folder = folder.replaceAll(":", " ");
+        folder = folder.replaceAll("\"", " ");
+        folder = folder.replaceAll("<", " ");
+        folder = folder.replaceAll(">", " ");
+        folder = folder.replaceAll("\\?", " ");
+        folder = folder.replaceAll("/", " ");
+        folder = folder.replaceAll("\\)", " ");
+        return folder;
     }
 }

@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Product {
+    private String category;
     private String title;
     private String shortTitle;
     private String description;
@@ -140,5 +141,13 @@ public class Product {
 
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }
