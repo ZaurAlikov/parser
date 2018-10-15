@@ -19,10 +19,7 @@ import java.net.URLEncoder;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Parser {
 
@@ -134,7 +131,11 @@ public class Parser {
         product.setVideoUrl(doc.select("div.art-card-detail").select("iframe").attr("src"));
         String href = doc.getElementsByClass("dwnl-links").select("a[href]").attr("href");
         if (href != null && !href.equals("") && !anotherColor) {
-            downloadPdf(product, href);
+            if (href.indexOf(".jpg") > 0) {
+                System.err.println("Вместо pdf jpg скачать вручную");
+            } else {
+                downloadPdf(product, href);
+            }
         }
         Transliterator toLatinTrans = Transliterator.getInstance("Russian-Latin/BGN");
         if (!color.equals("")) product.setSeoUrl(filterSeoUrl(toLatinTrans.transliterate(product.getShortTitle()+color)));
@@ -166,6 +167,11 @@ public class Parser {
             }
             URL url = new URL(urlPic);
             image = ImageIO.read(url);
+
+            if (product.getCharacteristics().get("Артикул:") == null) {
+                product.getCharacteristics().put("Артикул:", "01-" + String.valueOf(nextInt()));
+            }
+
             String imgName = product.getCharacteristics().get("Артикул:") + "_" + i;
             File catFolder = new File("C:\\esAutoImg\\" + product.getCategory());
             if (!catFolder.exists()) {
@@ -256,6 +262,10 @@ public class Parser {
         String fullCsv = "C:\\esAutoCSV\\fullData.csv";
         CSVWriter writer1 = new CSVWriter(new FileWriter(fullCsv), ';', '"');
         for (Product product : products) {
+            String imgPath = "";
+            if (product.getPhotosName().size() > 0) {
+                imgPath = product.getPhotosName().get(0);
+            }
             String [] prod = ("" + "%" +
                     product.getTitle() + "%" +
                     product.getCharacteristics().get("Артикул:") + "%" +
@@ -267,7 +277,7 @@ public class Parser {
                     "" + "%" +
                     "✔ " + product.getTitle() + ". ✈Быстрая доставка по всей России. ☺Низкие цены. ★Официальная гарантия ✔Заказывайте у нас!" + "%" +
                     product.getDescription() + "%" +
-                    "https://berivdorogu.ru/image/catalog/product/" + product.getPhotosName().get(0) + "%" +
+                    "https://berivdorogu.ru/image/catalog/product/" + imgPath + "%" +
                     "1" + "%" +
                     "1" + "%" +
                     product.getSeoUrl() + "%" +
@@ -293,7 +303,7 @@ public class Parser {
                     "Купить " + product.getTitle() + " в интернет магазине berivdorogu.ru" + "%" +
                     "✔ " + product.getTitle() + ". ✈Быстрая доставка по всей России. ☺Низкие цены. ★Официальная гарантия ✔Заказывайте у нас!" + "%" +
                     getCharacters(product) + "%" +
-                    "https://berivdorogu.ru/image/catalog/product/" + product.getPhotosName().get(0) + "%" +
+                    "https://berivdorogu.ru/image/catalog/product/" + imgPath + "%" +
                     getImagesPath(product) + "%" +
                     product.getBaseUrl())
                     .split("%");
@@ -355,5 +365,10 @@ public class Parser {
         folder = folder.replaceAll("/", "_");
         folder = folder.replaceAll("\\)", " ");
         return folder;
+    }
+
+    public int nextInt() {
+        Random random = new Random();
+        return random.nextInt((9999 - 1000) + 1) + 1000;
     }
 }
