@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.channels.Channels;
@@ -39,6 +40,9 @@ public class Parser {
                 } catch (HttpStatusException e) {
                     System.err.println("Fetching %s..." + url + " code: " + e.getStatusCode());
                     if (e.getStatusCode() != 200) continue;
+                } catch (SocketTimeoutException e) {
+                    System.err.println("Fetching %s..." + url + " SocketTimeoutException");
+                    continue;
                 }
                 String baseUrl = "https://es-auto.ru";
                 Elements select = doc.getElementsByClass("sel-color").select("a[href]");
@@ -51,6 +55,9 @@ public class Parser {
                         } catch (HttpStatusException e) {
                             System.err.println("Fetching %s..." + baseUrl + href + " code: " + e.getStatusCode());
                             if (e.getStatusCode() != 200) continue;
+                        } catch (SocketTimeoutException e) {
+                            System.err.println("Fetching %s..." + url + " SocketTimeoutException");
+                            continue;
                         }
                         if (usedBaseUrls.contains(doc.baseUri())) {
                             continue;
@@ -158,18 +165,17 @@ public class Parser {
                 continue;
             }
             URL url = new URL(urlPic);
-
             image = ImageIO.read(url);
             String imgName = product.getCharacteristics().get("Артикул:") + "_" + i;
             File catFolder = new File("C:\\esAutoImg\\" + product.getCategory());
             if (!catFolder.exists()) {
                 catFolder.mkdir();
             }
-            File goodsFolder = new File(catFolder + File.separator + product.getCharacteristics().get("Артикул:"));
+            File goodsFolder = new File(catFolder + File.separator + validFoldName(product.getCharacteristics().get("Артикул:")));
             if (!goodsFolder.exists()) {
                 goodsFolder.mkdir();
             }
-            ImageIO.write(image, "jpg",new File(goodsFolder + File.separator + imgName + ".jpg"));
+            ImageIO.write(image, "jpg",new File(goodsFolder + File.separator + validFoldName(imgName) + ".jpg"));
             photosName.add(imgName + ".jpg");
             ++i;
         }
@@ -346,7 +352,7 @@ public class Parser {
         folder = folder.replaceAll("<", " ");
         folder = folder.replaceAll(">", " ");
         folder = folder.replaceAll("\\?", " ");
-        folder = folder.replaceAll("/", " ");
+        folder = folder.replaceAll("/", "_");
         folder = folder.replaceAll("\\)", " ");
         return folder;
     }
