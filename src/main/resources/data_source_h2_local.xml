@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/context">
+
+    <context:property-placeholder location="classpath:settings.properties"/>
+
+    <bean id="dataSource"
+          class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="org.h2.Driver"/>
+        <property name="url" value="jdbc:h2:~/h2db/esautobd"/>
+        <property name="username" value="sa"/>
+        <property name="password" value=""/>
+        <property name="initialSize" value="1"/>
+        <property name="minIdle" value="1"/>
+        <property name="poolPreparedStatements" value="true"/>
+    </bean>
+
+    <jdbc:initialize-database data-source="dataSource" enabled="true">
+        <jdbc:script location="classpath:sql/create_tables.sql" encoding="UTF-8"/>
+        <!--&lt;!&ndash;<jdbc:script location="classpath:sql/drop_tables_h2.sql" encoding="UTF-8"/>&ndash;&gt;-->
+
+        <!--&lt;!&ndash;<jdbc:script location="classpath:sql/create_indexes.sql" encoding="UTF-8"/>&ndash;&gt;-->
+
+        <!--&lt;!&ndash;<jdbc:script location="classpath:sql/participants.sql" encoding="UTF-8"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;<jdbc:script location="classpath:sql/clients.sql" encoding="UTF-8"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;<jdbc:script location="classpath:sql/insert_values.sql" encoding="UTF-8"/>&ndash;&gt;-->
+    </jdbc:initialize-database>
+</beans>
