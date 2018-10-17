@@ -1,3 +1,5 @@
+package ru.alcotester.parser.model.category;
+
 import java.util.ArrayList;
 import java.util.List;
 

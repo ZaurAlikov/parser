@@ -1,10 +1,17 @@
+package ru.alcotester.parser;
+
 import com.ibm.icu.text.Transliterator;
 import com.opencsv.CSVWriter;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ru.alcotester.parser.model.Product;
+import ru.alcotester.parser.model.category.Category;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -18,15 +25,30 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
+@Component
 public class Parser {
 
     private boolean anotherColor = false;
     private String color = "";
     private List<String> usedBaseUrls = new ArrayList<>();
 
+    @Autowired
+    private BasicDataSource dataSource;
+
     public void urlManager(Map<String, Category> categories) throws InterruptedException, IOException {
+
+        try {
+            Connection connection = dataSource.getConnection();
+            connection.prepareStatement("INSERT INTO ESAUTO.GOODS (INTERNAL_ARTICLE) VALUES ('1')").execute();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         List<Product> productList = new ArrayList<>();
         for (Map.Entry<String, Category> category : categories.entrySet()) {
             for (String url : category.getValue().getUrlList()) {

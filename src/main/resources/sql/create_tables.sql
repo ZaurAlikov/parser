@@ -1,26 +1,34 @@
 /*==============================================================*/
-/* Created by:   Zaytseva.T.Sergeevna@omega.sbrf.ru             */
-/* Created on:   20.08.2018                                     */
+/* Created by:   Alikov Z.O.                                    */
+/* Created on:   17.10.2018                                     */
 /*==============================================================*/
-CREATE SCHEMA IF NOT EXISTS "UFS";
+CREATE SCHEMA IF NOT EXISTS "ESAUTO";
 
 /*==============================================================*/
-/* Table: "PARTICIPANT"                                         */
+/* Table: "GOODS"                                               */
 /*==============================================================*/
-CREATE TABLE "UFS"."CBB_PARTICIPANT" (
-  ID           VARCHAR2(255) NOT NULL,
-  POSITION_ID  VARCHAR2(255) NOT NULL,
-  POSITION     VARCHAR2(255),
-  JOB_TITLE    VARCHAR2(255),
-  TER_DIVISION VARCHAR2(255),
-  FULL_NAME    VARCHAR2(255) NOT NULL,
-  SHORT_NAME   VARCHAR2(255),
-  FIRST_NAME   VARCHAR2(255),
-  MIDDLE_NAME  VARCHAR2(255),
-  LAST_NAME    VARCHAR2(255),
-  USERNAME     VARCHAR2(255),
-  CONSTRAINT PK_PARTICIPANT PRIMARY KEY (ID),
-  CONSTRAINT UQ_PARTICIPANT_POSITION_ID UNIQUE (POSITION_ID)
+CREATE TABLE "ESAUTO"."GOODS" (
+  INTERNAL_ARTICLE          VARCHAR2(255) NOT NULL,
+  SUPPLIER_ARTICLE          VARCHAR2(255),
+  CATEGORY                  VARCHAR2(255),
+  TITLE                     VARCHAR2(1024),
+  SHORT_TITLE               VARCHAR2(255),
+  MANUFACTURER              VARCHAR2(255),
+  COUNTRY                   VARCHAR2(255),
+  PRICE                     VARCHAR2(255),
+  VIDEO_URL                 VARCHAR2(255),
+  SEO_URL                   VARCHAR2(255),
+  IMG_URL                   VARCHAR2(255),
+  ADDITIONAL_IMG_URL        VARCHAR2(1024),
+  DESCRIPTION               VARCHAR2(MAX),
+  META_TITLE                VARCHAR2(255),
+  META_DESCRIPTION          VARCHAR2(1024),
+  PROPERTY_ID               VARCHAR2(255),
+  SUITABLE_CARS             VARCHAR2(MAX),
+  SUPPLIER_URL              VARCHAR2(255),
+  CONSTRAINT PK_INTERNAL_ARTICLE PRIMARY KEY (INTERNAL_ARTICLE),
+  CONSTRAINT UQ_SEO_URL UNIQUE (SEO_URL),
+  CONSTRAINT UQ_TITLE UNIQUE (TITLE),
 );
 
 

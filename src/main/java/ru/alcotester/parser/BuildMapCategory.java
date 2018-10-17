@@ -1,3 +1,7 @@
+package ru.alcotester.parser;
+
+import ru.alcotester.parser.model.category.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
