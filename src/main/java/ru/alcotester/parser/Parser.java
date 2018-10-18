@@ -43,7 +43,7 @@ public class Parser {
 
         try {
             Connection connection = dataSource.getConnection();
-            connection.prepareStatement("INSERT INTO ESAUTO.GOODS (INTERNAL_ARTICLE) VALUES ('1')").execute();
+            connection.prepareStatement("INSERT INTO ESAUTO.GOODS (INTERNAL_ARTICLE) VALUES ('3')").execute();
             connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
