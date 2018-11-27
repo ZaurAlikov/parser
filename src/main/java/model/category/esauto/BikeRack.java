@@ -1,3 +1,7 @@
+package model.category.esauto;
+
+import model.category.Category;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -6,6 +10,33 @@ public class BikeRack implements Category {
     private List<String> bikeRack = new ArrayList<>();
 
     public BikeRack() {
+        bikeRack.add("https://es-auto.ru/bike-rack/sku/juza/");
+
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/polaris-3/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/juza/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/asso/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/bike-pro/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/menabo-naos-tilting/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/naos-rapid/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/e-dison/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/altair/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/sirio/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/alphard/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/alphard-plus/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/naos-eco/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/free-ride300/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/thule-upride-599/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/thule-proride-591-twin-pack/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/thruride-565/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/thule-velospace-xt-2/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/thule-velospace-xt-3/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/yakima-justclick-2/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/yakima-justclick-3/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/frontloader/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/yakima-forklift/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/yakima-hangout-3/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/yakima-halfback-3/");
+
 //        bikeRack.add("https://es-auto.ru/bike-rack/sku/atlant-8562/");
 //        bikeRack.add("https://es-auto.ru/bike-rack/sku/atlant-8563/");
 //        bikeRack.add("https://es-auto.ru/bike-rack/sku/backpac/");
@@ -60,9 +91,9 @@ public class BikeRack implements Category {
 //        bikeRack.add("https://es-auto.ru/bike-rack/sku/proride-598-aluminium/");
 //        bikeRack.add("https://es-auto.ru/bike-rack/sku/proride-598-black/");
 //        bikeRack.add("https://es-auto.ru/bike-rack/sku/thule-easyfold-932/");
-        bikeRack.add("https://es-auto.ru/bike-rack/sku/thule-proride-591/");
-        bikeRack.add("https://es-auto.ru/bike-rack/sku/thule-proride-598-limited-edition/");
-        bikeRack.add("https://es-auto.ru/bike-rack/sku/velokreplenie-amos/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/thule-proride-591/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/thule-proride-598-limited-edition/");
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/velokreplenie-amos/");
     }
 
     @Override
