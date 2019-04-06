@@ -122,7 +122,7 @@ public class ESAutoParserImpl implements Parser {
             if (href.indexOf(".jpg") > 0) {
                 System.err.println("Вместо pdf jpg скачать вручную");
             } else {
-                downloadPdf(product, href);
+                downloadPdf(product, "https://es-auto.ru" + href);
             }
         }
         Transliterator toLatinTrans = Transliterator.getInstance("Russian-Latin/BGN");

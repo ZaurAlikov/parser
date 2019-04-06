@@ -20,7 +20,7 @@ import java.util.Random;
 
 public class Utils {
     public static void downloadImg(Product product) throws IOException {
-        BufferedImage image;
+        BufferedImage image = null;
         List<String> photosName = new ArrayList<>();
         int i = 1;
         for (String urlPic : product.getPhotosUrl()) {
@@ -28,9 +28,14 @@ public class Utils {
                 continue;
             }
             URL url = new URL(urlPic);
-            image = ImageIO.read(url);
+            try {
+                image = ImageIO.read(url);
+            }
+            catch (IOException e) {
+                continue;
+            }
 
-            if (product.getCharacteristics().get("Артикул:") == null) {
+            if (product.getCharacteristics().get("Артикул:") == null || product.getCharacteristics().get("Артикул:").equals("")) {
                 product.getCharacteristics().put("Артикул:", "01-" + String.valueOf(nextInt()));
             }
 
@@ -43,18 +48,28 @@ public class Utils {
             if (!goodsFolder.exists()) {
                 goodsFolder.mkdir();
             }
-            ImageIO.write(image, "jpg",new File(goodsFolder + File.separator + validFoldName(imgName) + ".jpg"));
-            photosName.add(imgName + ".jpg");
+
+            String fmt = urlPic.substring(urlPic.lastIndexOf(".")+1);
+            if (fmt.equals("") || fmt.length() > 4) {
+                fmt = "jpg";
+            }
+
+            ImageIO.write(image, fmt, new File(goodsFolder + File.separator + validFoldName(imgName) + "." + fmt));
+            photosName.add(imgName + "." + fmt);
             ++i;
         }
         product.setPhotosName(photosName);
     }
 
     public static void downloadPdf(Product product, String urlPdf) throws IOException {
-        if (isRussian(urlPdf)) {
-            return;
+        if (urlPdf.contains(" ")) {
+            urlPdf = urlPdf.replace(" ", "%20");
         }
-        URL url = new URL("https://es-auto.ru" + urlPdf);
+//        if (isRussian(urlPdf)) {
+//            return;
+//        }
+//        URL url = new URL("https://es-auto.ru" + urlPdf);
+        URL url = new URL(urlPdf);
         File catFolder = new File("C:\\esAutoPDF\\" + product.getCategory());
         if (!catFolder.exists()) {
             catFolder.mkdir();
@@ -117,6 +132,8 @@ public class Utils {
         text = text.replaceAll("\"", "");
         text = text.replaceAll("/", "-");
         text = text.replaceAll("\\\\", "-");
+        text = text.replaceAll("·", "");
+        text = text.replaceAll("\\.", "");
         return text.toLowerCase();
     }
 
