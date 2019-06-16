@@ -105,7 +105,7 @@ public class ESAutoParserImpl implements Parser {
         Elements elementsByClass1 = doc.getElementsByClass("swiper-wrapper").get(0).select("[src]");
         List<String> photos = new ArrayList<>();
         for (Element element : elementsByClass1) {
-            photos.add("https:" + element.attr("src"));
+            photos.add("https://es-auto.ru" + element.attr("src"));
         }
         product.setPhotosUrl(photos);
         Elements select = doc.getElementsByClass("forcars-box").select("div[class]").val("p").select("a[href]");

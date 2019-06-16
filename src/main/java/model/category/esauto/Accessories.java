@@ -10,6 +10,13 @@ public class Accessories implements Category {
     private List<String> accessories = new ArrayList<>();
 
     public Accessories() {
+        accessories.add("https://es-auto.ru/accessories/sku/the-cable-lock-buzzrack-buzz-loop/");
+        accessories.add("https://es-auto.ru/accessories/sku/adapter-for-yakima-tubetop-bike/");
+        accessories.add("https://es-auto.ru/accessories/sku/fairing-yakima-windshields-34-86-cm/");
+        accessories.add("https://es-auto.ru/accessories/sku/fairing-yakima-windshields-40-110-cm/");
+        accessories.add("https://es-auto.ru/accessories/sku/fairing-yakima-windshields-46-116-cm/");
+        accessories.add("https://es-auto.ru/accessories/sku/fairing-windshields-yakima-52-132-cm/");
+
 //        accessories.add("https://es-auto.ru/accessories/sku/bags-thule-go-pack-set-8006-new-4-pcs/");
 //        accessories.add("https://es-auto.ru/accessories/sku/evidence/");
 //        accessories.add("https://es-auto.ru/accessories/sku/case-storage-box-thule-sport/");

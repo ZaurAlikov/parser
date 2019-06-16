@@ -10,8 +10,20 @@ public class BikeRack implements Category {
     private List<String> bikeRack = new ArrayList<>();
 
     public BikeRack() {
-        bikeRack.add("https://es-auto.ru/bike-rack/sku/juza/");
+        bikeRack.add("https://es-auto.ru/bike-rack/sku/buzz-rack-moose-bazz-runner-spark-2-new/");
+        bikeRack.add("https://es-auto.ru/bike-rack/sku/buzz-rack-buzzquattro/");
+        bikeRack.add("https://es-auto.ru/bike-rack/sku/buzzrack-scorpion/");
+        bikeRack.add("https://es-auto.ru/bike-rack/sku/buzz-rack-moose-h4/");
+        bikeRack.add("https://es-auto.ru/bike-rack/sku/buzz-rack-buffalo-h4/");
+        bikeRack.add("https://es-auto.ru/bike-rack/sku/buzzrack-eazzy-4/");
+        bikeRack.add("https://es-auto.ru/bike-rack/sku/buzz-rack-bazz-runner-spark-3-new/");
+        bikeRack.add("https://es-auto.ru/bike-rack/sku/buzz-rack-buffalo-4/");
+        bikeRack.add("https://es-auto.ru/bike-rack/sku/moose-h33672/");
+        bikeRack.add("https://es-auto.ru/bike-rack/sku/buzz-rack-pilot/");
+        bikeRack.add("https://es-auto.ru/bike-rack/sku/yakima-highroad/");
 
+
+//        bikeRack.add("https://es-auto.ru/bike-rack/sku/juza/");
 //        bikeRack.add("https://es-auto.ru/bike-rack/sku/polaris-3/");
 //        bikeRack.add("https://es-auto.ru/bike-rack/sku/juza/");
 //        bikeRack.add("https://es-auto.ru/bike-rack/sku/asso/");

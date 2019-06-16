@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Product {
+    private String articule;
     private String category;
     private String title;
     private String shortTitle;
@@ -23,6 +24,14 @@ public class Product {
     private String baseUrl;
 
     public Product() {
+    }
+
+    public String getArticule() {
+        return articule;
+    }
+
+    public void setArticule(String articule) {
+        this.articule = articule;
     }
 
     public String getTitle() {
