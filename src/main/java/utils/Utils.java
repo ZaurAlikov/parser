@@ -24,7 +24,7 @@ public class Utils {
         List<String> photosName = new ArrayList<>();
         int i = 1;
         for (String urlPic : product.getPhotosUrl()) {
-            if (isRussian(urlPic) || urlPic.equals("https:")) {
+            if (isRussian(urlPic) || urlPic.equals("https:") || urlPic.equals(product.getSiteUrl())) {
                 continue;
             }
             URL url = new URL(urlPic);
@@ -170,7 +170,7 @@ public class Utils {
             writer.writeNext(prod);
 
             String [] prodFullInfo = (
-                    product.getCategory() + "%" +
+                            product.getCategory() + "%" +
                             product.getTitle() + "%" +
                             product.getShortTitle() + "%" +
                             product.getCharacteristics().get("Артикул:") + "%" +
@@ -186,7 +186,8 @@ public class Utils {
                             getCharacters(product) + "%" +
                             "https://berivdorogu.ru/image/catalog/product/" + imgPath + "%" +
                             getImagesPath(product) + "%" +
-                            product.getBaseUrl())
+                            product.getBaseUrl() + "%" +
+                                    product.getFunction())
                     .split("%");
             writer1.writeNext(prodFullInfo);
         }

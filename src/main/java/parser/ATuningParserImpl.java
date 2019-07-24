@@ -53,6 +53,7 @@ public class ATuningParserImpl implements Parser {
     @Override
     public Product parse(Document doc, String category) throws IOException {
         Product product = new Product();
+        product.setSiteUrl("https://a-tuning.ru");
         product.setCategory(category);
         product.setArticule(doc.getElementsByClass("code-id").select("span").get(1).text().substring(9));
         product.setShortTitle(doc.getElementsByClass("product-info__head").select("h1").text());

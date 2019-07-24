@@ -58,7 +58,7 @@ public class ESAutoParserImpl implements Parser {
                         System.out.println("Fetching %s..." + doc.baseUri());
                         productList.add(parse(doc, category.getKey()));
                         usedBaseUrls.add(doc.baseUri());
-                        Thread.sleep(1000);
+                        Thread.sleep(100);
                         color = "";
                         anotherColor = true;
                     }
@@ -70,7 +70,7 @@ public class ESAutoParserImpl implements Parser {
                     System.out.println("Fetching %s..." + doc.baseUri());
                     productList.add(parse(doc, category.getKey()));
                     usedBaseUrls.add(doc.baseUri());
-                    Thread.sleep(1000);
+                    Thread.sleep(100);
                 }
             }
         }
@@ -80,6 +80,7 @@ public class ESAutoParserImpl implements Parser {
     @Override
     public Product parse(Document doc, String category) throws IOException {
         Product product = new Product();
+        product.setSiteUrl("https://es-auto.ru");
         product.setCategory(category);
         String title = doc.getElementsByClass("main-header").text();
         title = title.substring(0,1).toUpperCase() + title.substring(1);
@@ -105,7 +106,7 @@ public class ESAutoParserImpl implements Parser {
         Elements elementsByClass1 = doc.getElementsByClass("swiper-wrapper").get(0).select("[src]");
         List<String> photos = new ArrayList<>();
         for (Element element : elementsByClass1) {
-            photos.add("https://es-auto.ru" + element.attr("src"));
+            photos.add(product.getSiteUrl() + element.attr("src"));
         }
         product.setPhotosUrl(photos);
         Elements select = doc.getElementsByClass("forcars-box").select("div[class]").val("p").select("a[href]");
@@ -122,7 +123,7 @@ public class ESAutoParserImpl implements Parser {
             if (href.indexOf(".jpg") > 0) {
                 System.err.println("Вместо pdf jpg скачать вручную");
             } else {
-                downloadPdf(product, "https://es-auto.ru" + href);
+                downloadPdf(product, product.getSiteUrl() + href);
             }
         }
         Transliterator toLatinTrans = Transliterator.getInstance("Russian-Latin/BGN");

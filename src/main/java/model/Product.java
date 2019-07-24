@@ -22,6 +22,8 @@ public class Product {
     private String videoUrl;
     private String seoUrl;
     private String baseUrl;
+    private String function;
+    private String siteUrl;
 
     public Product() {
     }
@@ -160,5 +162,21 @@ public class Product {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getFunction() {
+        return function;
+    }
+
+    public void setFunction(String function) {
+        this.function = function;
+    }
+
+    public String getSiteUrl() {
+        return siteUrl;
+    }
+
+    public void setSiteUrl(String siteUrl) {
+        this.siteUrl = siteUrl;
     }
 }

@@ -35,6 +35,7 @@ public class EurodetalParserImpl implements Parser {
     @Override
     public Product parse(Document doc, String category) throws IOException {
         Product product = new Product();
+        product.setSiteUrl("https://bagazhniki.su");
         product.setCategory(category);
         product.setTitle(doc.select("h1").text().replaceAll("`", ""));
         Transliterator toLatinTrans = Transliterator.getInstance("Russian-Latin/BGN");
@@ -70,7 +71,7 @@ public class EurodetalParserImpl implements Parser {
         Elements slides_item_item = doc.getElementsByClass("slides_item item").select("a[href]");
         List<String> images = new ArrayList<>();
         for (Element element : slides_item_item) {
-            images.add("https://bagazhniki.su" + element.attr("href"));
+            images.add(product.getSiteUrl() + element.attr("href"));
         }
         images.add("https://bagazhniki.su" + doc.getElementsByClass("slides_item item active").select("a[href]").attr("href"));
         product.setPhotosUrl(images);
@@ -102,7 +103,7 @@ public class EurodetalParserImpl implements Parser {
         while (iterator.hasNext()) {
             String s = iterator.next();
             if (s.equals("Грузоподъемность (лыжи):")) {
-                if (stringMap.get("Грузоподъемность (лыжи):").equals("Нет")) {
+                if (stringMap.get("Грузоподъемность (лыжи):").toLowerCase().equals("нет")) {
                     characteristics.put("Количество лыж (пар):", stringMap.get("Грузоподъемность (лыжи):"));
                 } else {
                     characteristics.put("Количество лыж (пар):", stringMap.get("Грузоподъемность (лыжи):").substring(0,stringMap.get("Грузоподъемность (лыжи):").indexOf(" пар лыж")));
@@ -110,7 +111,7 @@ public class EurodetalParserImpl implements Parser {
                 iterator.remove();
             }
             if (s.equals("Грузоподъемность (сноуборды):")) {
-                if (stringMap.get("Грузоподъемность (сноуборды):").equals("Нет")) {
+                if (stringMap.get("Грузоподъемность (сноуборды):").toLowerCase().equals("нет")) {
                     characteristics.put("Количество сноубордов (шт.):", stringMap.get("Грузоподъемность (сноуборды):"));
                 } else {
                     characteristics.put("Количество сноубордов (шт.):", stringMap.get("Грузоподъемность (сноуборды):").substring(0,stringMap.get("Грузоподъемность (сноуборды):").indexOf(" сноуборда")));
@@ -122,7 +123,7 @@ public class EurodetalParserImpl implements Parser {
                 iterator.remove();
             }
             if (s.equals("Максимальная длина лыж:")) {
-                if (stringMap.get("Максимальная длина лыж:").equals("Нет")) {
+                if (stringMap.get("Максимальная длина лыж:").toLowerCase().equals("нет")) {
                     characteristics.put("Максимальная длина лыж (мм):", stringMap.get("Максимальная длина лыж:"));
                 } else {
                     String substring = stringMap.get("Максимальная длина лыж:").substring(0, stringMap.get("Максимальная длина лыж:").indexOf("мм"));
