@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -29,7 +30,10 @@ public class Utils {
             }
             URL url = new URL(urlPic);
             try {
-                image = ImageIO.read(url);
+                URLConnection connection = url.openConnection();
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+                connection.connect();
+                image = ImageIO.read(connection.getInputStream());
             }
             catch (IOException e) {
                 continue;
@@ -70,6 +74,10 @@ public class Utils {
 //        }
 //        URL url = new URL("https://es-auto.ru" + urlPdf);
         URL url = new URL(urlPdf);
+        URLConnection connection = url.openConnection();
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+        connection.connect();
+
         File catFolder = new File("C:\\esAutoPDF\\" + product.getCategory());
         if (!catFolder.exists()) {
             catFolder.mkdir();
@@ -83,7 +91,7 @@ public class Utils {
         FileChannel fileChannel = null;
         FileOutputStream fileOutputStream = null;
         try {
-            readableByteChannel = Channels.newChannel(url.openStream());
+            readableByteChannel = Channels.newChannel(connection.getInputStream());
             if (!new File(fileName).exists()) {
                 fileOutputStream = new FileOutputStream(fileName);
                 fileChannel = fileOutputStream.getChannel();
@@ -134,6 +142,9 @@ public class Utils {
         text = text.replaceAll("\\\\", "-");
         text = text.replaceAll("·", "");
         text = text.replaceAll("\\.", "");
+        text = text.replaceAll("Ё", "o");
+        text = text.replaceAll("ë", "o");
+        text = text.replaceAll("Ë", "O");
         return text.toLowerCase();
     }
 

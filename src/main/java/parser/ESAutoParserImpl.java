@@ -2,7 +2,8 @@ package parser;
 
 import com.ibm.icu.text.Transliterator;
 import model.Product;
-import model.category.Category;
+import model.UrlList;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,65 +17,106 @@ import java.util.*;
 
 import static utils.Utils.*;
 
-public class ESAutoParserImpl implements Parser {
+public class ESAutoParserImpl extends MainParser {
+
+    private final List<String> usedBaseUrls = new ArrayList<>();
 
     private boolean anotherColor = false;
     private String color = "";
-    private List<String> usedBaseUrls = new ArrayList<>();
 
     @Override
-    public void urlManager(Map<String, Category> categories) throws InterruptedException, IOException {
+    public List<Product> processingUrls(UrlList urlList) throws IOException {
         List<Product> productList = new ArrayList<>();
-        for (Map.Entry<String, Category> category : categories.entrySet()) {
-            for (String url : category.getValue().getUrlList()) {
-                Document doc = null;
-                try {
-                    doc = Jsoup.connect(url).get();
-                } catch (HttpStatusException e) {
-                    System.err.println("Fetching %s..." + url + " code: " + e.getStatusCode());
-                    if (e.getStatusCode() != 200) continue;
-                } catch (SocketTimeoutException e) {
-                    System.err.println("Fetching %s..." + url + " SocketTimeoutException");
-                    continue;
-                }
-                String baseUrl = "https://es-auto.ru";
-                Elements select = doc.getElementsByClass("sel-color").select("a[href]");
-                if (select.size() > 0) {
-                    for (Element element : select) {
-                        String href = element.attr("href");
-                        color = "-" + href.substring(href.substring(0, href.length()-1).lastIndexOf("/")+1, href.length()-1);
-                        try {
-                            doc = Jsoup.connect(baseUrl + href).get();
-                        } catch (HttpStatusException e) {
-                            System.err.println("Fetching %s..." + baseUrl + href + " code: " + e.getStatusCode());
-                            if (e.getStatusCode() != 200) continue;
-                        } catch (SocketTimeoutException e) {
-                            System.err.println("Fetching %s..." + url + " SocketTimeoutException");
-                            continue;
-                        }
-                        if (usedBaseUrls.contains(doc.baseUri())) {
-                            continue;
-                        }
-                        System.out.println("Fetching %s..." + doc.baseUri());
-                        productList.add(parse(doc, category.getKey()));
-                        usedBaseUrls.add(doc.baseUri());
-                        Thread.sleep(100);
-                        color = "";
-                        anotherColor = true;
+        for (String url : urlList.getUrlList()) {
+            Document doc = null;
+            String baseUrl = "https://es-auto.ru";
+            try {
+                doc = Jsoup.connect(baseUrl + url).get();
+            } catch (HttpStatusException e) {
+                System.err.println("Fetching %s..." + url + " code: " + e.getStatusCode());
+                if (e.getStatusCode() != 200) continue;
+            } catch (SocketTimeoutException e) {
+                System.err.println("Fetching %s..." + url + " SocketTimeoutException");
+                continue;
+            }
+            Elements select = doc.getElementsByClass("sel-color").select("a[href]");
+            if (select.size() > 0) {
+                for (Element element : select) {
+                    String href = element.attr("href");
+                    color = "-" + href.substring(href.substring(0, href.length()-1).lastIndexOf("/")+1, href.length()-1);
+                    try {
+                        doc = Jsoup.connect(baseUrl + href).get();
+                    } catch (HttpStatusException e) {
+                        System.err.println("Fetching %s..." + baseUrl + href + " code: " + e.getStatusCode());
+                        if (e.getStatusCode() != 200) continue;
+                    } catch (SocketTimeoutException e) {
+                        System.err.println("Fetching %s..." + url + " SocketTimeoutException");
+                        continue;
                     }
-                    anotherColor = false;
-                } else {
                     if (usedBaseUrls.contains(doc.baseUri())) {
                         continue;
                     }
                     System.out.println("Fetching %s..." + doc.baseUri());
-                    productList.add(parse(doc, category.getKey()));
+                    try {
+                        productList.add(parse(doc, urlList.getCategoryName()));
+                        usedBaseUrls.add(doc.baseUri());
+                        Thread.sleep(100);
+                    } catch (IllegalArgumentException e) {
+                        System.err.printf("У товара на странице %s отсутствует артикул%n", doc.baseUri());
+                        usedBaseUrls.add(doc.baseUri());
+                    } catch (Exception e) {
+                        System.err.println("При парсинге что-то пошло не так");
+                        e.printStackTrace();
+                    }
+                    color = "";
+                    anotherColor = true;
+                }
+                anotherColor = false;
+            } else {
+                if (usedBaseUrls.contains(doc.baseUri())) {
+                    continue;
+                }
+                System.out.println("Fetching %s..." + doc.baseUri());
+                try {
+                    productList.add(parse(doc, urlList.getCategoryName()));
                     usedBaseUrls.add(doc.baseUri());
                     Thread.sleep(100);
+                } catch (IllegalArgumentException e) {
+                    System.err.printf("У товара на странице %s отсутствует артикул%n", doc.baseUri());
+                    usedBaseUrls.add(doc.baseUri());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
-        writeCsv(productList);
+        return productList;
+    }
+
+    @Override
+    public void extractProductLinks(UrlList urlList) throws IOException {
+        Document doc;
+        String urlParamPagen = "?PAGEN_1=";
+        List<String> productUrlList = new ArrayList<>();
+        for (String url : urlList.getUrlList()) {
+            int repeatCount = 0;
+            int page = 1;
+            while (repeatCount <= productUrlList.size()*3) {
+                doc = Jsoup.connect(url + urlParamPagen + page).get();
+                Elements elements = doc.getElementsByClass("relative product-list-item__link").select("a");
+                for (Element element : elements) {
+                    String href = element.attr("href");
+                    if (!productUrlList.contains(href)) {
+                        productUrlList.add(href);
+                    } else {
+                        ++repeatCount;
+                    }
+                }
+                ++page;
+            }
+            System.out.println(page);
+        }
+        urlList.getUrlList().clear();
+        urlList.getUrlList().addAll(productUrlList);
     }
 
     @Override
@@ -101,6 +143,13 @@ public class ESAutoParserImpl implements Parser {
         Elements elementsByClass = doc.getElementsByClass("tech-box").select("tr");
         for (Element byClass : elementsByClass) {
             characteristics.put(byClass.select("td").get(0).text(), byClass.select("td").get(1).text());
+        }
+        if (characteristics.get("Артикул:") == null) {
+            String art = doc.getElementsByClass("art").select("span").text().replace("Артикул:", "").trim();
+            if (StringUtils.isBlank(art)) {
+                throw new IllegalArgumentException("Отсутствует артикул");
+            }
+            characteristics.put("Артикул:", art);
         }
         product.setCharacteristics(characteristics);
         Elements elementsByClass1 = doc.getElementsByClass("swiper-wrapper").get(0).select("[src]");

@@ -2,7 +2,7 @@ package parser;
 
 import com.ibm.icu.text.Transliterator;
 import model.Product;
-import model.category.Category;
+import model.UrlList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,22 +14,42 @@ import java.util.*;
 
 import static utils.Utils.downloadImg;
 import static utils.Utils.filterSeoUrl;
-import static utils.Utils.writeCsv;
 
-public class EurodetalParserImpl implements Parser {
+public class EurodetalParserImpl extends MainParser {
+
     @Override
-    public void urlManager(Map<String, Category> categories) throws InterruptedException, IOException {
+    public List<Product> processingUrls(UrlList urlList) throws IOException {
         List<Product> productList = new ArrayList<>();
-        Document doc = Jsoup.connect("https://bagazhniki.su/catalog/avtomobilnye-boksy").get();
-        Elements elements = doc.getElementsByClass("pos_item__title text-uppercase").select("a[href]");
-        for (Element element : elements) {
-            String href = "https://bagazhniki.su" + element.attr("href");
-            doc = Jsoup.connect(href).get();
+        Document doc;
+        for (String url : urlList.getUrlList()) {
+            doc = Jsoup.connect(url).get();
             System.out.println("Fetching %s..." + doc.baseUri());
-            productList.add(parse(doc, "Автомобильные боксы"));
-            Thread.sleep(1000);
+            productList.add(parse(doc, urlList.getCategoryName()));
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        writeCsv(productList);
+        return productList;
+    }
+
+    @Override
+    public void extractProductLinks(UrlList urlList) throws IOException {
+        Document doc;
+        List<String> productUrlList = new ArrayList<>();
+        for (String url : urlList.getUrlList()) {
+            doc = Jsoup.connect(url).get();
+            Elements elements = doc.getElementsByClass("pos_item").select("a[href]");
+            for (Element element : elements) {
+                String href = "https://bagazhniki.su" + element.attr("href");
+                if (!productUrlList.contains(href)) {
+                    productUrlList.add(href);
+                }
+            }
+        }
+        urlList.getUrlList().clear();
+        urlList.getUrlList().addAll(productUrlList);
     }
 
     @Override
@@ -68,12 +88,12 @@ public class EurodetalParserImpl implements Parser {
             }
         }
         product.setCharacteristics(characteristics);
-        Elements slides_item_item = doc.getElementsByClass("slides_item item").select("a[href]");
+        Elements slides_item_item = doc.getElementsByClass("home_first-sliders").select("a");
         List<String> images = new ArrayList<>();
         for (Element element : slides_item_item) {
             images.add(product.getSiteUrl() + element.attr("href"));
         }
-        images.add("https://bagazhniki.su" + doc.getElementsByClass("slides_item item active").select("a[href]").attr("href"));
+//        images.add("https://bagazhniki.su" + doc.getElementsByClass("slides_item item active").select("a[href]").attr("href"));
         product.setPhotosUrl(images);
         downloadImg(product);
 
@@ -132,7 +152,13 @@ public class EurodetalParserImpl implements Parser {
                 iterator.remove();
             }
             if (s.equals("Объем:")) {
-                characteristics.put("Объем (л.):", stringMap.get("Объем:").substring(0,stringMap.get("Объем:").indexOf(" л")));
+                int value;
+                if (stringMap.get("Объем:").contains(" л")) {
+                    value = stringMap.get("Объем:").indexOf(" л");
+                } else {
+                    value = stringMap.get("Объем:").indexOf("л");
+                }
+                characteristics.put("Объем (л.):", stringMap.get("Объем:").substring(0,value));
                 iterator.remove();
             }
             if (s.equals("Открытие бокса:")) {
@@ -141,7 +167,13 @@ public class EurodetalParserImpl implements Parser {
             }
             if (s.equals("Размеры:")) {
                 if (stringMap.get("Размеры:").contains("мм")) {
-                    characteristics.put("Внеш. размеры (длина, ширина, высота):", stringMap.get("Размеры:").substring(0,stringMap.get("Размеры:").indexOf(" мм")));
+                    int value;
+                    if (stringMap.get("Размеры:").contains(" мм")) {
+                        value = stringMap.get("Размеры:").indexOf(" мм");
+                    } else {
+                        value = stringMap.get("Размеры:").indexOf("мм");
+                    }
+                    characteristics.put("Внеш. размеры (длина, ширина, высота):", stringMap.get("Размеры:").substring(0,value));
                 }
                 iterator.remove();
             }
@@ -153,6 +185,4 @@ public class EurodetalParserImpl implements Parser {
         stringMap.putAll(characteristics);
         characteristics.clear();
     }
-
-
 }

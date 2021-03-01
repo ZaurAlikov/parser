@@ -2,7 +2,7 @@ package parser;
 
 import com.ibm.icu.text.Transliterator;
 import model.Product;
-import model.category.Category;
+import model.UrlList;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,26 +16,30 @@ import java.util.*;
 
 import static utils.Utils.*;
 
-public class BagajnikParserImpl implements Parser  {
+public class BagajnikParserImpl extends MainParser {
 
     @Override
-    public void urlManager(Map<String, Category> categories) throws InterruptedException, IOException {
+    public List<Product> processingUrls(UrlList urlList) throws IOException {
         List<Product> productList = new ArrayList<>();
-        for (Map.Entry<String, Category> category : categories.entrySet()) {
-            for (String url : category.getValue().getUrlList()) {
-                try {
-                    Document doc = Jsoup.connect(url).get();
-                    System.out.println("Fetching %s..." + doc.baseUri());
-                    productList.add(parse(doc, category.getKey()));
-                    Thread.sleep(1000);
-                } catch (HttpStatusException e) {
-                    System.err.println("Fetching %s..." + url + " code: " + e.getStatusCode());
-                } catch (SocketTimeoutException e) {
-                    System.err.println("Fetching %s..." + url + " SocketTimeoutException");
-                }
+        for (String url : urlList.getUrlList()) {
+            try {
+                Document doc = Jsoup.connect(url).get();
+                System.out.println("Fetching %s..." + doc.baseUri());
+                productList.add(parse(doc, urlList.getCategoryName()));
+                Thread.sleep(1000);
+            } catch (HttpStatusException e) {
+                System.err.println("Fetching %s..." + url + " code: " + e.getStatusCode());
+            } catch (SocketTimeoutException e) {
+                System.err.println("Fetching %s..." + url + " SocketTimeoutException");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
-        writeCsv(productList);
+        return productList;
+    }
+
+    @Override
+    public void extractProductLinks(UrlList urlList) {
     }
 
     @Override
@@ -49,7 +53,7 @@ public class BagajnikParserImpl implements Parser  {
             title = title.substring(0, title.indexOf("(") - 31);
             product.setShortTitle(title);
             product.setSeoUrl(filterSeoUrl(toLatinTrans.transliterate(product.getShortTitle())));
-        } else  {
+        } else {
 
             String shortTitle;
             if (title.contains("(арт. ")) {
